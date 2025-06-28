@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7x7 細胞擴散遊戲</title>
+    <meta name="description" content="創新的策略棋盤遊戲，體驗細胞擴散與連鎖反應的樂趣">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .player-a { color: #dc3545; }
+        .player-b { color: #007bff; }
+
+        .game-board-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        #game-board {
+            border: 4px solid #333;
+            border-radius: 15px;
+            cursor: pointer;
+            background: #f8f9fa;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        #game-board:hover {
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .primary-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .rules {
+            margin-top: 30px;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .rules h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .rules ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .rules li {
+            margin-bottom: 8px;
+        }
+
+        .winner-announcement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1000;
+            border: 3px solid #28a745;
+        }
+
+        .winner-announcement.hidden {
+            display: none;
+        }
+
+        .winner-text {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #28a745;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .game-info {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            #game-board {
+                width: 350px !important;
+                height: 350px !important;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            button {
+                padding: 10px 20px;
+                min-width: 100px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #game-board {
+                width: 280px !important;
+                height: 280px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>7×7 細胞擴散遊戲</h1>
+        <p class="subtitle">策略、擴散、征服</p>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <span class="info-label">當前玩家</span>
+                <span class="info-value" id="current-player">玩家 A</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">遊戲狀態</span>
+                <span class="info-value" id="game-status">選擇起始位置</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">回合數</span>
+                <span class="info-value" id="turn-count">1</span>
+            </div>
+        </div>
+
+        <div class="game-board-container">
+            <canvas id="game-board" width="700" height="700"></canvas>
+        </div>
+
+        <div class="controls">
+            <button id="reset-btn" class="primary-btn">重新開始</button>
+            <button id="undo-btn" class="secondary-btn" disabled>撤銷</button>
+            <button id="rules-btn" class="secondary-btn">遊戲規則</button>
+        </div>
+
+        <div class="rules" id="rules-section" style="display: none;">
+            <h3>🎮 遊戲規則</h3>
+            <ul>
+                <li><strong>起始階段：</strong>每位玩家選擇一個空格放置3點細胞</li>
+                <li><strong>遊戲進行：</strong>點擊己方細胞增加1點數值</li>
+                <li><strong>擴散機制：</strong>細胞達到4點時會向上下左右四個方向擴散</li>
+                <li><strong>轉換規則：</strong>擴散到對手細胞時會將其轉換為己方細胞</li>
+                <li><strong>疊加規則：</strong>擴散到己方細胞時點數疊加</li>
+                <li><strong>勝利條件：</strong>對手無法再進行移動時獲勝</li>
+                <li><strong>邊界處理：</strong>擴散到棋盤邊緣的點數會消失</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="overlay hidden" id="overlay"></div>
+    <div class="winner-announcement hidden" id="winner-announcement">
+        <div class="winner-text" id="winner-text"></div>
+        <button class="primary-btn" onclick="game.reset()">再玩一局</button>
+    </div>
+
+    <script>
+        class CellDiffusionGame {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.boardSize = 7;
+                this.cellSize = 100;
+                this.board = Array(7).fill().map(() => Array(7).fill(null));
+                this.currentPlayer = 'A';
+                this.gamePhase = 'initial'; // 'initial', 'playing', 'ended'
+                this.animating = false;
+                this.history = [];
+                this.turnCount = 1;
+                this.playersInitialized = { A: false, B: false };
+                
+                this.colors = {
+                    A: '#dc3545',
+                    B: '#007bff',
+                    empty: '#f8f9fa',
+                    border: '#dee2e6'
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.drawBoard();
+                this.canvas.addEventListener('click', this.handleClick.bind(this));
+                document.getElementById('reset-btn').addEventListener('click', () => this.reset());
+                document.getElementById('undo-btn').addEventListener('click', () => this.undo());
+                document.getElementById('rules-btn').addEventListener('click', () => this.toggleRules());
+                this.updateUI();
+            }
+            
+            handleClick(event) {
+                if (this.animating || this.gamePhase === 'ended') return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = Math.floor((event.clientX - rect.left) / (this.canvas.clientWidth / this.boardSize));
+                const y = Math.floor((event.clientY - rect.top) / (this.canvas.clientHeight / this.boardSize));
+                
+                if (x >= 0 && x < this.boardSize && y >= 0 && y < this.boardSize) {
+                    if (this.gamePhase === 'initial') {
+                        this.placeInitialCell(x, y);
+                    } else if (this.gamePhase === 'playing') {
+                        this.addPoint(x, y);
+                    }
+                }
+            }
+            
+            placeInitialCell(x, y) {
+                if (this.board[y][x] === null) {
+                    this.saveState();
+                    this.board[y][x] = { player: this.currentPlayer, points: 3 };
+                    this.playersInitialized[this.currentPlayer] = true;
+                    
+                    this.switchPlayer();
+                    
+                    if (this.playersInitialized.A && this.playersInitialized.B) {
+                        this.gamePhase = 'playing';
+                        this.updateStatus('開始遊戲！點擊己方細胞增加點數');
+                    }
+                    
+                    this.drawBoard();
+                    this.updateUI();
+                }
+            }
+            
+            addPoint(x, y) {
+                const cell = this.board[y][x];
+                if (cell && cell.player === this.currentPlayer) {
+                    this.saveState();
+                    cell.points++;
+                    
+                    if (cell.points >= 4) {
+                        this.animating = true;
+                        this.explodeCell(x, y);
+                        setTimeout(() => {
+                            this.animating = false;
+                            this.switchPlayer();
+                            this.checkWinCondition();
+                            this.updateUI();
+                        }, 800);
+                    } else {
+                        this.switchPlayer();
+                        this.updateUI();
+                    }
+                    
+                    this.drawBoard();
+                }
+            }
+            
+            explodeCell(x, y) {
+                const cell = this.board[y][x];
+                if (!cell || cell.points < 4) return;
+                
+                cell.points = 0;
+                this.board[y][x] = null;
+                
+                const directions = [
+                    { dx: 0, dy: -1 }, // 上
+                    { dx: 0, dy: 1 },  // 下
+                    { dx: -1, dy: 0 }, // 左
+                    { dx: 1, dy: 0 }   // 右
+                ];
+                
+                const explosions = [];
+                
+                directions.forEach(dir => {
+                    const newX = x + dir.dx;
+                    const newY = y + dir.dy;
+                    
+                    if (newX >= 0 && newX < this.boardSize && newY >= 0 && newY < this.boardSize) {
+                        if (this.board[newY][newX] === null) {
+                            this.board[newY][newX] = { player: cell.player, points: 1 };
+                        } else {
+                            this.board[newY][newX].player = cell.player;
+                            this.board[newY][newX].points++;
+                            
+                            if (this.board[newY][newX].points >= 4) {
+                                explosions.push({ x: newX, y: newY });
+                            }
+                        }
+                    }
+                });
+                
+                this.drawBoard();
+                
+                // 處理連鎖爆炸
+                if (explosions.length > 0) {
+                    setTimeout(() => {
+                        explosions.forEach(pos => {
+                            this.explodeCell(pos.x, pos.y);
+                        });
+                    }, 300);
+                }
+            }
+            
+            saveState() {
+                const state = {
+                    board: JSON.parse(JSON.stringify(this.board)),
+                    currentPlayer: this.currentPlayer,
+                    gamePhase: this.gamePhase,
+                    playersInitialized: { ...this.playersInitialized },
+                    turnCount: this.turnCount
+                };
+                this.history.push(state);
+                
+                if (this.history.length > 20) {
+                    this.history.shift();
+                }
+            }
+            
+            undo() {
+                if (this.history.length > 0 && !this.animating) {
+                    const lastState = this.history.pop();
+                    this.board = lastState.board;
+                    this.currentPlayer = lastState.currentPlayer;
+                    this.gamePhase = lastState.gamePhase;
+                    this.playersInitialized = lastState.playersInitialized;
+                    this.turnCount = lastState.turnCount;
+                    
+                    this.drawBoard();
+                    this.updateUI();
+                }
+            }
+            
+            switchPlayer() {
+                this.currentPlayer = this.currentPlayer === 'A' ? 'B' : 'A';
+                this.turnCount++;
+            }
+            
+            checkWinCondition() {
+                const playerACells = this.getAllCells().filter(cell => cell.player === 'A');
+                const playerBCells = this.getAllCells().filter(cell => cell.player === 'B');
+                
+                if (playerACells.length === 0) {
+                    this.endGame('B');
+                } else if (playerBCells.length === 0) {
+                    this.endGame('A');
+                } else if (!this.hasValidMoves(this.currentPlayer)) {
+                    const opponent = this.currentPlayer === 'A' ? 'B' : 'A';
+                    this.endGame(opponent);
+                }
+            }
+            
+            hasValidMoves(player) {
+                return this.getAllCells().some(cell => cell.player === player);
+            }
+            
+            getAllCells() {
+                const cells = [];
+                for (let y = 0; y < this.boardSize; y++) {
+                    for (let x = 0; x < this.boardSize; x++) {
+                        if (this.board[y][x] !== null) {
+                            cells.push({ ...this.board[y][x], x, y });
+                        }
+                    }
+                }
+                return cells;
+            }
+            
+            endGame(winner) {
+                this.gamePhase = 'ended';
+                const winnerText = winner === 'A' ? '玩家 A 獲勝！' : '玩家 B 獲勝！';
+                document.getElementById('winner-text').textContent = winnerText;
+                document.getElementById('overlay').classList.remove('hidden');
+                document.getElementById('winner-announcement').classList.remove('hidden');
+            }
+            
+            drawBoard() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 繪製網格
+                this.ctx.strokeStyle = this.colors.border;
+                this.ctx.lineWidth = 2;
+                
+                for (let i = 0; i <= this.boardSize; i++) {
+                    // 垂直線
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(i * this.cellSize, 0);
+                    this.ctx.lineTo(i * this.cellSize, this.canvas.height);
+                    this.ctx.stroke();
+                    
+                    // 水平線
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, i * this.cellSize);
+                    this.ctx.lineTo(this.canvas.width, i * this.cellSize);
+                    this.ctx.stroke();
+                }
+                
+                // 繪製細胞
+                for (let y = 0; y < this.boardSize; y++) {
+                    for (let x = 0; x < this.boardSize; x++) {
+                        const cell = this.board[y][x];
+                        if (cell) {
+                            this.drawCell(x, y, cell);
+                        }
+                    }
+                }
+            }
+            
+            drawCell(x, y, cell) {
+                const centerX = x * this.cellSize + this.cellSize / 2;
+                const centerY = y * this.cellSize + this.cellSize / 2;
+                const radius = Math.min(this.cellSize * 0.3, 30) + (cell.points - 1) * 5;
+                
+                // 繪製細胞圓圈
+                this.ctx.fillStyle = this.colors[cell.player];
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                this.ctx.fill();
+                
+                // 繪製邊框
+                this.ctx.strokeStyle = 'white';
+                this.ctx.lineWidth = 3;
+                this.ctx.stroke();
+                
+                // 繪製點數
+                this.ctx.fillStyle = 'white';
+                this.ctx.font = 'bold 24px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(cell.points.toString(), centerX, centerY);
+                
+                // 繪製危險指示（3點時）
+                if (cell.points === 3) {
+                    this.ctx.strokeStyle = '#ffc107';
+                    this.ctx.lineWidth = 4;
+                    this.ctx.setLineDash([5, 5]);
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, radius + 8, 0, 2 * Math.PI);
+                    this.ctx.stroke();
+                    this.ctx.setLineDash([]);
+                }
+            }
+            
+            updateUI() {
+                const currentPlayerElement = document.getElementById('current-player');
+                const gameStatusElement = document.getElementById('game-status');
+                const turnCountElement = document.getElementById('turn-count');
+                const undoBtn = document.getElementById('undo-btn');
+                
+                currentPlayerElement.textContent = `玩家 ${this.currentPlayer}`;
+                currentPlayerElement.className = this.currentPlayer === 'A' ? 'info-value player-a' : 'info-value player-b';
+                
+                if (this.gamePhase === 'initial') {
+                    if (!this.playersInitialized.A && !this.playersInitialized.B) {
+                        gameStatusElement.textContent = '玩家 A 選擇起始位置';
+                    } else if (this.playersInitialized.A && !this.playersInitialized.B) {
+                        gameStatusElement.textContent = '玩家 B 選擇起始位置';
+                    }
+                } else if (this.gamePhase === 'playing') {
+                    gameStatusElement.textContent = this.animating ? '連鎖反應中...' : '點擊己方細胞增加點數';
+                } else if (this.gamePhase === 'ended') {
+                    gameStatusElement.textContent = '遊戲結束';
+                }
+                
+                turnCountElement.textContent = Math.floor(this.turnCount / 2) + 1;
+                undoBtn.disabled = this.history.length === 0 || this.animating;
+            }
+            
+            updateStatus(text) {
+                document.getElementById('game-status').textContent = text;
+            }
+            
+            toggleRules() {
+                const rulesSection = document.getElementById('rules-section');
+                rulesSection.style.display = rulesSection.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            reset() {
+                this.board = Array(7).fill().map(() => Array(7).fill(null));
+                this.currentPlayer = 'A';
+                this.gamePhase = 'initial';
+                this.animating = false;
+                this.history = [];
+                this.turnCount = 1;
+                this.playersInitialized = { A: false, B: false };
+                
+                document.getElementById('overlay').classList.add('hidden');
+                document.getElementById('winner-announcement').classList.add('hidden');
+                
+                this.drawBoard();
+                this.updateUI();
+            }
+        }
+        
+        // 初始化遊戲
+        let game;
+        window.addEventListener('DOMContentLoaded', () => {
+            game = new CellDiffusionGame('game-board');
+        });
+    </script>
+</body>
+</html>
