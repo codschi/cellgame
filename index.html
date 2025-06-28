@@ -105,7 +105,7 @@
                 padding: 30px;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 height: fit-content;
-                width: 300px;
+                width: 420px;
                 flex-shrink: 0;
             }
         }
@@ -413,13 +413,13 @@
             <div class="rules" id="rules-section" style="display: none;">
                 <h3>🎮 遊戲規則</h3>
                 <ul>
-                    <li><strong>起始階段：</strong>每位玩家選擇一個空格放置3點細胞</li>
-                    <li><strong>遊戲進行：</strong>點擊己方細胞增加1點數值</li>
-                    <li><strong>擴散機制：</strong>細胞達到4點時會向上下左右四個方向擴散</li>
-                    <li><strong>轉換規則：</strong>擴散到對手細胞時會將其轉換為己方細胞</li>
-                    <li><strong>疊加規則：</strong>擴散到己方細胞時點數疊加</li>
-                    <li><strong>勝利條件：</strong>對手無法再進行移動時獲勝</li>
-                    <li><strong>邊界處理：</strong>擴散到棋盤邊緣的點數會消失</li>
+                    <li><strong>起始階段：</strong><br>每位玩家選擇一個空格放置3點細胞</li>
+                    <li><strong>遊戲進行：</strong><br>點擊己方細胞增加1點數值</li>
+                    <li><strong>擴散機制：</strong><br>細胞達到4點時會向上下左右四個方向擴散</li>
+                    <li><strong>轉換規則：</strong><br>擴散到對手細胞時會將其轉換為己方細胞</li>
+                    <li><strong>疊加規則：</strong><br>擴散到己方細胞時點數疊加</li>
+                    <li><strong>勝利條件：</strong><br>對手無法再進行移動時獲勝</li>
+                    <li><strong>邊界處理：</strong><br>擴散到棋盤邊緣的點數會消失</li>
                 </ul>
             </div>
         </div>
@@ -776,6 +776,8 @@
                 this.turnCount = 1;
                 
                 document.getElementById('victory-overlay').style.display = 'none';
+                // 重置規則說明狀態
+                document.getElementById('rules-section').style.display = 'none';
                 
                 this.drawBoard();
                 this.updateUI();
@@ -787,6 +789,9 @@
         function startGame(boardSize) {
             document.getElementById('size-selector').classList.add('hidden');
             const gameContainer = document.getElementById('game-container');
+            
+            // 重置規則說明狀態
+            document.getElementById('rules-section').style.display = 'none';
             
             // 根據螢幕大小設置適當的佈局類別
             if (window.innerWidth <= 767) {
@@ -801,6 +806,8 @@
         function backToSizeSelector() {
             document.getElementById('game-container').className = 'game-container';
             document.getElementById('victory-overlay').style.display = 'none';
+            // 重置規則說明狀態
+            document.getElementById('rules-section').style.display = 'none';
             document.getElementById('size-selector').classList.remove('hidden');
         }
 
