@@ -405,7 +405,7 @@
             </div>
 
             <div class="controls">
-                <button id="rules-btn" class="secondary-btn">遊戲規則</button>
+                <button id="rules-btn" class="secondary-btn" onclick="toggleRules()">遊戲規則</button>
                 <button id="restart-btn" class="danger-btn">重新開始</button>
                 <button id="change-size-btn" class="secondary-btn">更改棋盤大小</button>
             </div>
@@ -485,7 +485,6 @@
                 this.drawBoard();
                 this.canvas.addEventListener('click', this.handleClick.bind(this));
                 document.getElementById('restart-btn').addEventListener('click', () => this.restart());
-                document.getElementById('rules-btn').addEventListener('click', () => this.toggleRules());
                 document.getElementById('change-size-btn').addEventListener('click', () => backToSizeSelector());
                 this.updateUI();
             }
@@ -760,11 +759,6 @@
                 
                 turnCountElement.textContent = Math.floor(this.turnCount / 2) + 1;
             }
-
-            toggleRules() {
-                const rulesSection = document.getElementById('rules-section');
-                rulesSection.style.display = rulesSection.style.display === 'none' ? 'block' : 'none';
-            }
             
             restart() {
                 this.board = Array(this.boardSize).fill().map(() => Array(this.boardSize).fill(null));
@@ -785,6 +779,12 @@
         }
         
         let game;
+
+        function toggleRules() {
+            const rulesSection = document.getElementById('rules-section');
+            const currentDisplay = window.getComputedStyle(rulesSection).display;
+            rulesSection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+        }
 
         function startGame(boardSize) {
             document.getElementById('size-selector').classList.add('hidden');
