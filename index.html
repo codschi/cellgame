@@ -25,7 +25,7 @@
             align-items: center;
             min-height: 100vh;
             flex-direction: column;
-            gap: 30px;
+            gap: 40px;
             text-align: center;
         }
 
@@ -36,37 +36,77 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .size-options {
+        .size-control {
             display: flex;
+            align-items: center;
             gap: 30px;
-            flex-wrap: wrap;
+            background: white;
+            border-radius: 25px;
+            padding: 20px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .size-arrow {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
             justify-content: center;
         }
 
-        .size-option {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
+        .size-arrow:hover {
+            background: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .size-arrow:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .size-display {
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .size-display h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .size-description {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .start-game-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-width: 200px;
+            margin-top: 20px;
+            width: fit-content;
+            max-width: 320px;
         }
 
-        .size-option:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-
-        .size-option h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .size-option p {
-            color: #666;
-            line-height: 1.4;
+        .start-game-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
         }
 
         /* 遊戲主界面 */
@@ -219,6 +259,24 @@
             transform: translateY(-2px);
         }
 
+        .toggle-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .toggle-btn:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .toggle-btn.active {
+            background: #28a745;
+        }
+
+        .toggle-btn.active:hover {
+            background: #218838;
+        }
+
         button:disabled {
             background: #ccc;
             cursor: not-allowed;
@@ -262,28 +320,29 @@
             background: rgba(0,0,0,0.8);
             display: none;
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
         .victory-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background: white;
             border-radius: 20px;
             padding: 40px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             animation: victoryPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
         }
 
         @keyframes victoryPop {
             0% {
-                transform: translate(-50%, -50%) scale(0.3);
+                transform: scale(0.3);
                 opacity: 0;
             }
             100% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: scale(1);
                 opacity: 1;
             }
         }
@@ -309,50 +368,25 @@
             line-height: 1.6;
         }
 
-        /* 動畫效果 */
-        .exploding {
-            animation: explode 0.4s ease-out;
-        }
-
-        @keyframes explode {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(0);
-                opacity: 0;
-            }
-        }
-
-        .spreading {
-            animation: spread 0.3s ease-out;
-        }
-
-        @keyframes spread {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         /* 響應式調整 */
-        @media (max-width: 480px) {
-            .size-option {
-                min-width: 150px;
-                padding: 30px 20px;
+        @media (max-width: 600px) {
+            .size-control {
+                gap: 20px;
+                padding: 15px 25px;
+            }
+            
+            .size-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
 
-            .size-option h3 {
-                font-size: 1.3rem;
+            .size-display {
+                min-width: 150px;
+            }
+
+            .size-display h2 {
+                font-size: 2rem;
             }
 
             .victory-title {
@@ -360,8 +394,16 @@
             }
 
             .victory-content {
-                padding: 30px 20px;
-                margin: 20px;
+                padding: 25px 20px;
+                margin: 15px;
+                width: calc(100vw - 30px);
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .size-selector h1 {
+                font-size: 2rem;
             }
         }
 
@@ -374,16 +416,15 @@
     <!-- 棋盤尺寸選擇界面 -->
     <div class="size-selector" id="size-selector">
         <h1>細胞擴散遊戲</h1>
-        <div class="size-options">
-            <div class="size-option" onclick="startGame(5)">
-                <h3>5×5</h3>
-                <p>快速對戰<br>約5-10分鐘</p>
+        <div class="size-control">
+            <button class="size-arrow" id="size-prev" onclick="changeBoardSize(-1)">◀</button>
+            <div class="size-display">
+                <h2 id="size-text">5×5</h2>
+                <div class="size-description" id="size-desc">快速對戰<br>約3-8分鐘</div>
             </div>
-            <div class="size-option" onclick="startGame(7)">
-                <h3>7×7</h3>
-                <p>經典模式<br>約10-15分鐘</p>
-            </div>
+            <button class="size-arrow" id="size-next" onclick="changeBoardSize(1)">▶</button>
         </div>
+        <button class="start-game-btn" onclick="startGameWithCurrentSize()">開始遊戲</button>
     </div>
 
     <!-- 遊戲主界面 -->
@@ -405,6 +446,7 @@
             </div>
 
             <div class="controls">
+                <button id="coordinate-btn" class="toggle-btn" onclick="toggleCoordinates()">顯示座標</button>
                 <button id="rules-btn" class="secondary-btn" onclick="toggleRules()">遊戲規則</button>
                 <button id="restart-btn" class="danger-btn">重新開始</button>
                 <button id="change-size-btn" class="secondary-btn">更改棋盤大小</button>
@@ -436,6 +478,39 @@
     </div>
 
     <script>
+        // 棋盤尺寸配置
+        const boardSizes = [
+            { size: 5, name: '5×5', desc: '快速對戰<br>約3-8分鐘', difficulty: '簡單' },
+            { size: 6, name: '6×6', desc: '平衡模式<br>約5-12分鐘', difficulty: '適中' },
+            { size: 7, name: '7×7', desc: '經典模式<br>約8-15分鐘', difficulty: '標準' },
+            { size: 8, name: '8×8', desc: '史詩對戰<br>約12-25分鐘', difficulty: '困難' }
+        ];
+
+        let currentSizeIndex = 0;
+
+        function updateSizeDisplay() {
+            const current = boardSizes[currentSizeIndex];
+            document.getElementById('size-text').textContent = current.name;
+            document.getElementById('size-desc').innerHTML = current.desc;
+            
+            // 更新箭頭按鈕狀態
+            document.getElementById('size-prev').disabled = currentSizeIndex === 0;
+            document.getElementById('size-next').disabled = currentSizeIndex === boardSizes.length - 1;
+        }
+
+        function changeBoardSize(direction) {
+            const newIndex = currentSizeIndex + direction;
+            if (newIndex >= 0 && newIndex < boardSizes.length) {
+                currentSizeIndex = newIndex;
+                updateSizeDisplay();
+            }
+        }
+
+        function startGameWithCurrentSize() {
+            const boardSize = boardSizes[currentSizeIndex].size;
+            startGame(boardSize);
+        }
+
         class CellDiffusionGame {
             constructor(boardSize) {
                 this.boardSize = boardSize;
@@ -450,12 +525,14 @@
                 this.gameStartTime = Date.now();
                 this.explosionQueue = [];
                 this.turnCount = 1;
+                this.showCoordinates = false;
                 
                 this.colors = {
                     A: '#dc3545',
                     B: '#007bff',
                     empty: '#f8f9fa',
-                    border: '#dee2e6'
+                    border: '#dee2e6',
+                    coordinate: '#999'
                 };
                 
                 this.setupCanvas();
@@ -464,13 +541,16 @@
 
             calculateCellSize() {
                 const isMobile = window.innerWidth <= 767;
+                let cellSize;
                 if (isMobile) {
                     const maxSize = Math.min(window.innerWidth - 40, window.innerHeight * 0.6);
-                    return Math.floor(maxSize / this.boardSize);
+                    cellSize = Math.floor(maxSize / this.boardSize);
                 } else {
                     const maxSize = Math.min(600, window.innerHeight - 100);
-                    return Math.floor(maxSize / this.boardSize);
+                    cellSize = Math.floor(maxSize / this.boardSize);
                 }
+                // 確保最小尺寸，避免負半徑錯誤
+                return Math.max(30, cellSize);
             }
 
             setupCanvas() {
@@ -679,7 +759,7 @@
                     <div>棋盤大小: ${this.boardSize}×${this.boardSize}</div>
                 `;
                 
-                document.getElementById('victory-overlay').style.display = 'block';
+                document.getElementById('victory-overlay').style.display = 'flex';
             }
             
             drawBoard() {
@@ -703,6 +783,11 @@
                     this.ctx.stroke();
                 }
                 
+                // 繪製座標標籤（如果啟用）
+                if (this.showCoordinates) {
+                    this.drawCoordinates();
+                }
+                
                 // 繪製細胞
                 for (let y = 0; y < this.boardSize; y++) {
                     for (let x = 0; x < this.boardSize; x++) {
@@ -714,11 +799,27 @@
                 }
             }
             
+            drawCoordinates() {
+                this.ctx.fillStyle = this.colors.coordinate;
+                this.ctx.font = `${Math.max(10, this.cellSize * 0.15)}px Arial`;
+                this.ctx.textAlign = 'left';
+                this.ctx.textBaseline = 'top';
+                
+                for (let y = 0; y < this.boardSize; y++) {
+                    for (let x = 0; x < this.boardSize; x++) {
+                        const coordText = `${x + 1}-${y + 1}`;
+                        const textX = x * this.cellSize + 3;
+                        const textY = y * this.cellSize + 3;
+                        this.ctx.fillText(coordText, textX, textY);
+                    }
+                }
+            }
+            
             drawCell(x, y, cell) {
                 const centerX = x * this.cellSize + this.cellSize / 2;
                 const centerY = y * this.cellSize + this.cellSize / 2;
                 const baseRadius = this.cellSize * 0.25;
-                const radius = baseRadius + (cell.points - 1) * (this.cellSize * 0.05);
+                const radius = Math.max(5, baseRadius + (cell.points - 1) * (this.cellSize * 0.05));
                 
                 // 繪製細胞圓圈
                 this.ctx.fillStyle = this.colors[cell.player];
@@ -731,12 +832,8 @@
                 this.ctx.lineWidth = 3;
                 this.ctx.stroke();
                 
-                // 繪製點數
-                this.ctx.fillStyle = 'white';
-                this.ctx.font = `bold ${this.cellSize * 0.3}px Arial`;
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillText(cell.points.toString(), centerX, centerY);
+                // 繪製點數（用點代替數字）
+                this.drawDots(centerX, centerY, cell.points, radius);
                 
                 // 繪製危險指示（3點時）
                 if (cell.points === 3) {
@@ -744,10 +841,59 @@
                     this.ctx.lineWidth = 4;
                     this.ctx.setLineDash([8, 8]);
                     this.ctx.beginPath();
-                    this.ctx.arc(centerX, centerY, radius + 8, 0, 2 * Math.PI);
+                    this.ctx.arc(centerX, centerY, Math.max(10, radius + 8), 0, 2 * Math.PI);
                     this.ctx.stroke();
                     this.ctx.setLineDash([]);
                 }
+            }
+            
+            drawDots(centerX, centerY, points, cellRadius) {
+                this.ctx.fillStyle = 'white';
+                const dotRadius = Math.max(2, this.cellSize * 0.06);
+                const spacing = Math.max(8, cellRadius * 0.4);
+                
+                if (points === 1) {
+                    // 一個點：中心
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, dotRadius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                } else if (points === 2) {
+                    // 兩個點：左右排列
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX - spacing/2, centerY, dotRadius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX + spacing/2, centerY, dotRadius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                } else if (points === 3) {
+                    // 三個點：三角形排列
+                    const triangleHeight = spacing * 0.8;
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY - triangleHeight/2, dotRadius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX - spacing/2, centerY + triangleHeight/2, dotRadius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX + spacing/2, centerY + triangleHeight/2, dotRadius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                }
+            }
+            
+            toggleCoordinates() {
+                this.showCoordinates = !this.showCoordinates;
+                const btn = document.getElementById('coordinate-btn');
+                if (this.showCoordinates) {
+                    btn.textContent = '隱藏座標';
+                    btn.classList.add('active');
+                } else {
+                    btn.textContent = '顯示座標';
+                    btn.classList.remove('active');
+                }
+                this.drawBoard();
             }
             
             updateUI() {
@@ -776,9 +922,18 @@
                 this.drawBoard();
                 this.updateUI();
             }
+
+            // 清理遊戲資源
+            destroy() {
+                if (this.canvas) {
+                    this.canvas.removeEventListener('click', this.handleClick.bind(this));
+                }
+                document.getElementById('restart-btn').removeEventListener('click', () => this.restart());
+                document.getElementById('change-size-btn').removeEventListener('click', () => backToSizeSelector());
+            }
         }
         
-        let game;
+        let game = null;
 
         function toggleRules() {
             const rulesSection = document.getElementById('rules-section');
@@ -786,12 +941,35 @@
             rulesSection.style.display = currentDisplay === 'none' ? 'block' : 'none';
         }
 
+        function toggleCoordinates() {
+            if (game) {
+                game.toggleCoordinates();
+            }
+        }
+
         function startGame(boardSize) {
+            // 清理現有遊戲
+            if (game) {
+                game.destroy();
+                game = null;
+            }
+            
+            // 清理canvas
+            const canvas = document.getElementById('game-board');
+            const newCanvas = canvas.cloneNode(true);
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            
             document.getElementById('size-selector').classList.add('hidden');
             const gameContainer = document.getElementById('game-container');
             
             // 重置規則說明狀態
             document.getElementById('rules-section').style.display = 'none';
+            // 重置勝利提示狀態
+            document.getElementById('victory-overlay').style.display = 'none';
+            // 重置座標按鈕狀態
+            const coordinateBtn = document.getElementById('coordinate-btn');
+            coordinateBtn.textContent = '顯示座標';
+            coordinateBtn.classList.remove('active');
             
             // 根據螢幕大小設置適當的佈局類別
             if (window.innerWidth <= 767) {
@@ -800,14 +978,28 @@
                 gameContainer.className = 'game-container desktop-layout';
             }
             
+            // 創建新遊戲
             game = new CellDiffusionGame(boardSize);
         }
 
         function backToSizeSelector() {
+            // 清理現有遊戲
+            if (game) {
+                game.destroy();
+                game = null;
+            }
+            
+            // 清理canvas
+            const canvas = document.getElementById('game-board');
+            const newCanvas = canvas.cloneNode(true);
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            
+            // 重置所有UI狀態
             document.getElementById('game-container').className = 'game-container';
             document.getElementById('victory-overlay').style.display = 'none';
-            // 重置規則說明狀態
             document.getElementById('rules-section').style.display = 'none';
+            
+            // 顯示選擇界面
             document.getElementById('size-selector').classList.remove('hidden');
         }
 
@@ -834,6 +1026,9 @@
                 }
             }
         });
+
+        // 初始化選擇界面
+        updateSizeDisplay();
     </script>
 </body>
 </html>
